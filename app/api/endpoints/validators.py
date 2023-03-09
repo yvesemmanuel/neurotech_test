@@ -8,7 +8,9 @@ def validate_performance_body(body: dict):
 def validate_aderencia_body(body: dict):
 
     validate(instance=body, schema={
-         'type': 'object',
-         'path': {'type': ['string']},
-         'required': ['path']
+        'type': 'object',
+        'properties': {
+                'path': {'type': 'string', 'pattern': '^(\/[\w-]+)*\/?$'}
+            },
+        'required': ['path']
     })
