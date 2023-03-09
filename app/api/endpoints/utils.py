@@ -21,8 +21,8 @@ def format_input_records(body: dict) -> pd.DataFrame:
 
     Parameters
     ----------
-    body : dict
-        A dictionary containing the input records.
+    body : list
+        A list containing the input records.
 
     Returns
     -------
@@ -31,7 +31,7 @@ def format_input_records(body: dict) -> pd.DataFrame:
 
     '''
     
-    df = pd.DataFrame.from_dict(body)
+    df = pd.DataFrame(body)
 
     df.replace('', np.nan, inplace=True)
     df.fillna(value=np.nan, inplace=True)
