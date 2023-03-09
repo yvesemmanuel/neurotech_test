@@ -3,7 +3,7 @@ from collections import defaultdict
 from datetime import datetime
 import pandas as pd
 import numpy as np
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 from sklearn.metrics import roc_auc_score
 from scipy.stats import ks_2samp
 from scipy.spatial.distance import jensenshannon
@@ -30,9 +30,9 @@ def load_batch_records(path: str = './../batch_records.json') -> pd.DataFrame:
     return df
 
 
-def format_input_records(body: dict) -> pd.DataFrame:
+def format_input_records(body: List[dict]) -> pd.DataFrame:
     '''
-    Formats the input records contained in a dictionary as a Pandas DataFrame.
+    Formats the input records (dict) contained in a list as a Pandas DataFrame.
 
     Parameters
     ----------
@@ -108,6 +108,17 @@ def calculate_aucroc(input: pd.DataFrame) -> float:
 
 
 def get_test_data() -> Tuple[pd.DataFrame, pd.Series]:
+    '''
+    get_test_data() -> Tuple[pd.DataFrame, pd.Series]
+
+    Reads and loads test data from a gzip-compressed CSV file located at './../datasets/credit_01/test.gz'.
+
+    Returns:
+    A tuple with two elements:
+    - X: a pandas DataFrame with the features of the test data.
+    - y: a pandas Series with the target variable of the test data.
+    '''
+    
     df_test = pd.read_csv(
         './../datasets/credit_01/test.gz', compression='gzip')
     X = df_test.drop(['TARGET'], axis=1)
