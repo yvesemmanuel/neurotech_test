@@ -11,9 +11,13 @@ app = FastAPI(title='Monitoramento de modelos', version='1.0.0')
 
 
 @app.get('/')
-def read_root():
-    '''Hello World message.'''
-    return {'Hello World': 'from FastAPI'}
+def root():
+    return JSONResponse(
+        content={
+            'message': 'models monitoring API root'
+        },
+        status_code=HTTPStatus.OK
+    )
 
 
 app.include_router(router, prefix='/v1')
