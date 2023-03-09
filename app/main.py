@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from api.routers import router
 
-from api.endpoints.exceptions import InvalidRequestError, InternalServerError
+from api.endpoints.exceptions import InvalidRequestError, InternalServerError, InvalidPathError
 
 
 app = FastAPI(title='Monitoramento de modelos', version='1.0.0')
@@ -29,6 +29,13 @@ async def internal_server_error_handler(request, exc):
     return JSONResponse(
         content={'error': exc.message},
         status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+    )
+
+@app.exception_handler(InvalidPathError)
+async def invalid_path_handler(request, exc):
+    return JSONResponse(
+        content={'error': exc.message},
+        status_code=HTTPStatus.NOT_FOUND
     )
 
 

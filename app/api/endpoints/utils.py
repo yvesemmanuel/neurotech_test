@@ -3,8 +3,23 @@ from collections import defaultdict
 from datetime import datetime
 import pandas as pd
 import numpy as np
-from typing import Dict
+from typing import Dict, Tuple
 from sklearn.metrics import roc_auc_score
+from scipy.stats import ks_2samp
+from scipy.spatial.distance import jensenshannon
+
+
+def get_pre_trained_model(path: str = './../model.pkl'):
+    with open(path, 'rb') as f:
+            model = pickle.load(f)
+    
+    return model
+
+
+def get_data(path: str) -> pd.DataFrame:
+    df = pd.read_csv(path)
+
+    return df
 
 
 def load_batch_records(path: str = './../batch_records.json') -> pd.DataFrame:
@@ -84,10 +99,69 @@ def calculate_aucroc(input: pd.DataFrame) -> float:
     X = input.drop(['TARGET'], axis=1)
     y = input['TARGET']
 
-    with open('./../model.pkl', 'rb') as f:
-        model = pickle.load(f)
+    model = get_pre_trained_model()
 
-    y_pred = model.predict_proba(X)[:, 1]    
+    y_pred = model.predict_proba(X)[:, 1]
     aucroc = roc_auc_score(y, y_pred)
     
     return aucroc
+
+
+def get_test_data() -> Tuple[pd.DataFrame, pd.Series]:
+    df_test = pd.read_csv('./../datasets/credit_01/test.gz', compression='gzip')
+    X = df_test.drop(['TARGET'], axis=1)
+    y = df_test['TARGET']
+
+    return X, y
+
+
+def calculate_ks(path: str) -> Tuple[float, float]:
+    '''
+    Calculates the KS statistic and p-value for the predicted scores of a given model on the data in the path entry and test data.
+
+    Parameters:
+        path (str): The path to the data file.
+
+    Returns:
+        A tuple of the KS statistic and p-value.
+    '''
+    model = get_pre_trained_model()
+
+    df_input = get_data(path)
+    
+    X = df_input.drop(['TARGET'], axis=1)
+    X_test, _ = get_test_data()
+
+    y_pred = model.predict_proba(X)[:, 1]
+    y_pred_test = model.predict_proba(X_test)[:, 1]
+    
+    ks_statistic, p_value = ks_2samp(y_pred, y_pred_test)
+
+    return ks_statistic, p_value
+
+
+def calculate_js(path: str) -> float:
+    '''
+    Calculates the Jensen-Shannon (JS) distance between the probability distributions of a given model on the training and test data.
+
+    Parameters:
+        path (str): The path to the data file.
+
+    Returns:
+        The JS distance.
+    '''
+    model = get_pre_trained_model()
+
+    df_input = get_data(path)
+    X = df_input.drop(['TARGET'], axis=1)
+    X_test, _ = get_test_data()
+
+    y_pred = model.predict_proba(X)[:, 1]
+    y_pred_test = model.predict_proba(X_test)[:, 1]
+
+    hist1, _ = np.histogram(y_pred, bins=20, range=(0, 1), density=True)
+    hist2, _ = np.histogram(y_pred_test, bins=20, range=(0, 1), density=True)
+
+    js_distance = jensenshannon(hist1, hist2)
+
+    return js_distance
