@@ -11,6 +11,7 @@ from api.endpoints.exceptions import InvalidRequestError, InternalServerError, I
 
 router = APIRouter(prefix='/aderencia')
 
+
 @router.post('')
 async def read_aderencia(request: Request):
     try:
@@ -18,15 +19,18 @@ async def read_aderencia(request: Request):
 
         validate_aderencia_body(body)
     except ValueError:
-        raise InvalidRequestError('Invalid request body. Must be a valid JSON object.')
+        raise InvalidRequestError(
+            'Invalid request body. Must be a valid JSON object.')
     except exceptions.ValidationError as e:
-        raise InvalidRequestError('Body schema is invalid: {}.'.format(e.message))
+        raise InvalidRequestError(
+            'Body schema is invalid: {}.'.format(e.message))
 
     try:
         ks_statistic, p_value = calculate_ks(body['path'])
         js_distance = calculate_js(body['path'])
     except FileNotFoundError as e:
-        raise InvalidPathError('No such file or directory in the provide path.')
+        raise InvalidPathError(
+            'No such file or directory in the provide path.')
     except Exception as e:
         raise InternalServerError(str(e))
 

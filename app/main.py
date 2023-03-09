@@ -9,12 +9,15 @@ from api.endpoints.exceptions import InvalidRequestError, InternalServerError, I
 
 app = FastAPI(title='Monitoramento de modelos', version='1.0.0')
 
+
 @app.get('/')
 def read_root():
     '''Hello World message.'''
     return {'Hello World': 'from FastAPI'}
 
+
 app.include_router(router, prefix='/v1')
+
 
 @app.exception_handler(InvalidRequestError)
 async def invalid_request_handler(request, exc):
@@ -30,6 +33,7 @@ async def internal_server_error_handler(request, exc):
         content={'error': exc.message},
         status_code=HTTPStatus.INTERNAL_SERVER_ERROR
     )
+
 
 @app.exception_handler(InvalidPathError)
 async def invalid_path_handler(request, exc):

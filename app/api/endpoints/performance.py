@@ -11,11 +11,12 @@ from api.endpoints.exceptions import InvalidRequestError, InternalServerError
 
 router = APIRouter(prefix='/performance')
 
+
 @router.post('')
 async def read_performance(request: Request):
     '''
     Endpoint to read the model AUC-ROC performance using the body request as the input.
-    
+
     Raises:
         InvalidRequestError: If request body is not a valid JSON object or the body doesn't match the body schema.
         InternalServerError: If an internal server error occurs.
@@ -29,9 +30,11 @@ async def read_performance(request: Request):
 
         validate_performance_body(body)
     except ValueError:
-        raise InvalidRequestError('Invalid request body. Must be a valid JSON object.')
+        raise InvalidRequestError(
+            'Invalid request body. Must be a valid JSON object.')
     except exceptions.ValidationError as e:
-        raise InvalidRequestError('Body schema is invalid: {}.'.format(e.message))
+        raise InvalidRequestError(
+            'Body schema is invalid: {}.'.format(e.message))
 
     try:
         df = format_input_records(body)

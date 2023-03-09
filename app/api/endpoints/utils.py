@@ -11,8 +11,8 @@ from scipy.spatial.distance import jensenshannon
 
 def get_pre_trained_model(path: str = './../model.pkl'):
     with open(path, 'rb') as f:
-            model = pickle.load(f)
-    
+        model = pickle.load(f)
+
     return model
 
 
@@ -45,7 +45,7 @@ def format_input_records(body: dict) -> pd.DataFrame:
         A Pandas DataFrame containing the formatted input records.
 
     '''
-    
+
     df = pd.DataFrame(body)
 
     df.replace('', np.nan, inplace=True)
@@ -72,7 +72,7 @@ def count_records_by_month(records: pd.DataFrame) -> Dict[str, int]:
     '''
 
     counts = defaultdict(int)
-    
+
     for _, record in records.iterrows():
         ref_date_str = record.get('REF_DATE')
 
@@ -103,12 +103,13 @@ def calculate_aucroc(input: pd.DataFrame) -> float:
 
     y_pred = model.predict_proba(X)[:, 1]
     aucroc = roc_auc_score(y, y_pred)
-    
+
     return aucroc
 
 
 def get_test_data() -> Tuple[pd.DataFrame, pd.Series]:
-    df_test = pd.read_csv('./../datasets/credit_01/test.gz', compression='gzip')
+    df_test = pd.read_csv(
+        './../datasets/credit_01/test.gz', compression='gzip')
     X = df_test.drop(['TARGET'], axis=1)
     y = df_test['TARGET']
 
@@ -128,13 +129,13 @@ def calculate_ks(path: str) -> Tuple[float, float]:
     model = get_pre_trained_model()
 
     df_input = get_data(path)
-    
+
     X = df_input.drop(['TARGET'], axis=1)
     X_test, _ = get_test_data()
 
     y_pred = model.predict_proba(X)[:, 1]
     y_pred_test = model.predict_proba(X_test)[:, 1]
-    
+
     ks_statistic, p_value = ks_2samp(y_pred, y_pred_test)
 
     return ks_statistic, p_value
