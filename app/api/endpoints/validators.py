@@ -6,7 +6,7 @@ def validate_performance_body(body: dict):
     validate(instance=body, schema=BODY_SCHEMA)
 
 
-def validate_aderencia_body(body: dict):
+def validate_adherence_body(body: dict):
 
     validate(instance=body, schema={
         'type': 'object',
