@@ -11,7 +11,7 @@ app = FastAPI(title='Monitoramento de modelos', version='1.0.0')
 
 
 @app.get('/')
-def root():
+async def root():
     return JSONResponse(
         content={
             'message': 'models monitoring API root'
