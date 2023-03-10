@@ -6,7 +6,7 @@ It defines the root endpoint, includes the router, and sets up exception handler
 
 
 from http import HTTPStatus
-import uvicorn
+from mangum import Mangum
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from api.routers import router
@@ -90,5 +90,4 @@ async def invalid_path_handler(_, exc):
     )
 
 
-if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8001)
+handler = Mangum(app)
