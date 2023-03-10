@@ -2,8 +2,7 @@
 Module that exports a JSON schema to validate the body of the /performance endpoint request.
 
 The schema expects an array with at least two objects.
-Each object should have a "VAR2" property that can be either a string or null and an "IDADE"
-property that can be either a number or null.
+Each object should have all properties that can be null.
 '''
 
 BODY_SCHEMA = {
