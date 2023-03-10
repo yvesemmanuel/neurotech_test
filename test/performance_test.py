@@ -69,7 +69,7 @@ def test_successful():
     assert isinstance(response_body['auc_roc'], float)
 
 
-def get_testing_body(path: str = './../batch_records.json'):
+def get_testing_body(path: str = './batch_records.json'):
     '''
     Helper function that returns a testing batch records body.
 
