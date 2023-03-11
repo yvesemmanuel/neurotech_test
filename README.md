@@ -11,7 +11,7 @@ POST /performance
 Content-Type: application/json
 ```
 
-#### The request body should have the format of a list of records.
+#### The request body should have the format of a list of records. The min number of records is 2 for each list input.
 A record should have the following format:
 ```json
 {
@@ -152,20 +152,20 @@ If the request is successful, the API will return a JSON response object contain
 }
 ```
 
-#### Erros handling
+#### Error handling
 If the request body is not a valid JSON object or the body doesn't match the body schema, the API will return a 400 Bad Request response with the following error message:
 
 Response on bad request:
 ```json
 {
-  "detail": "Invalid request body. Must be a valid JSON object."
+  "error": "Invalid request body. Must be a valid JSON object."
 }
 ```
 
 Response on invalid schema:
 ```json
 {
-  "detail": "Body schema is invalid: ERROR"
+  "error": "Body schema is invalid: ERROR"
 }
 ```
 
@@ -174,7 +174,7 @@ If an internal server error occurs, the API will return a 500 Internal Server Er
 
 ```json
 {
-  "detail": "Internal server error."
+  "error": "Internal server error."
 }
 ```
 
@@ -216,20 +216,20 @@ If the request is successful, the API will return a JSON response object contain
 }
 ```
 
-#### Erros handling
+#### Error handling
 If the request body is not a valid JSON object or the body doesn't match the body schema, the API will return a 400 Bad Request response with the following error message:
 
+Response on bad request:
 ```json
-// response on bad request
 {
-  "detail": "Invalid request body. Must be a valid JSON object."
+  "error": "Invalid request body. Must be a valid JSON object."
 }
 ```
 
-Response on invalid schema
+Response on invalid schema:
 ```json
 {
-  "detail": "Body schema is invalid: ERROR"
+  "error": "Body schema is invalid: ERROR"
 }
 ```
 
@@ -237,7 +237,7 @@ If the request path or file doesn't exists, the API will return 404 Not Found Re
 
 ```json
 {
-  "detail": "No such file or directory in the provide path."
+  "error": "No such file or directory in the provide path."
 }
 ```
 
@@ -245,6 +245,12 @@ If an internal server error occurs, the API will return a 500 Internal Server Er
 
 ```json
 {
-  "detail": "Internal server error."
+  "error": "Internal server error."
 }
 ```
+
+## Deployment
+
+I attempted to establish a CI/CD pipeline to automate the integration and deployment process using GitHub Actions. However, I was unable to dedicate sufficient time to configuring the AWS infrastructure. Despite this, I was able to generate an API image using Docker and store it in AWS ECR. By doing so, I can use an AWS Lambda function as a proxy to the API. The root deployment endpoint can be accessed through this URL:
+
+    https://cc66xdhuzgl3kixkuusv7ap2qi0xaxhj.lambda-url.sa-east-1.on.aws/
