@@ -1,19 +1,18 @@
-# Monitoramento de modelos de _machine learning_
+# Machine Learning Model Monitoring API
 
-## Projeto 1: API para avaliação de aderência e performance
+This API is designed to monitor machine learning models. It uses FastAPI as the web framework, pytest for unit tests, and autopep8 and pylint for code formatting and quality checks.
 
-Ciência de Dados é uma área multidisciplinar, bem o sabemos, envolvendo estatística, matemática, engenharia de software e conhecimento especialista de negócio. Para este projeto, o cientista de dados colocará o seu chapéu de desenvolvedor e **criará uma API para avaliação de aderência e performance de um modelo de machine learning**.
+## Performance Endpoint
+The Performance Endpoint is used to read the model AUC-ROC performance using the request body as input. The request body should be a JSON object containing the necessary data to perform the performance calculation.
 
-Você pode utilizar o esqueleto na pasta [../monitoring/app/](../monitoring/app) como ponto de partida para sua API. Para executá-la, crie um ambiente Python (Conda) novo e instale as dependências em [../monitoring/app/requirements.txt](../monitoring/app/requirements.txt) (e outras dependências que ache necessárias).
+#### Request
+```bash
+POST /performance
+Content-Type: application/json
+```
 
-Entregáveis:
-- O repositório no Github contendo sua API.
-- Um Jupyter notebook, mostrando uma chamada a cada um dos 2 endpoints (dado que, no momento da execução do Notebook localmente, sua API esteja rodando localmente) e contendo o que se pede nos pontos *Como avaliar no Notebook*, das subseções 1.1 e 1.2 abaixo.
-
-A API deve ser feita com FastAPI e Uvicorn, e deve conter os seguintes endpoints POST:
-
-### 1.1 Performance e volumetria
-O primeiro endpoint deve receber uma lista de *registros*, em que cada registro deve conter valores de variáveis usadas no modelo, além de uma data de referência e o valor do alvo para aquele registro. O "body" usado na requisição fica a seu critério. Exemplo de conteúdo do registro (aqui ele é representado como um simples dicionário, mas a forma como você vai organizar o "body" da requisição é livre, desde que fique clara na documentação de sua API):
+#### The request body should have the format of a list of records.
+A record should have the following format:
 ```json
 {
     "VAR2": "M",
@@ -138,26 +137,110 @@ O primeiro endpoint deve receber uma lista de *registros*, em que cada registro 
     "TARGET": 1
 }
 ```
-A resposta da requisição POST deve conter:
 
-(a) A volumetria (quantidade de registros) para cada mês presente na lista de registros (lembre que temos uma entrada no dicionário que contém uma data de referência),
+#### Response
+If the request is successful, the API will return a JSON response object containing the volumetry by month and the AUC-ROC value:
 
-(b) A performance do modelo pré-treinado [../monitoring/model.pkl](../monitoring/model.pkl) neste conjunto de registros, indicada pelo valor da área sob a curva ROC. Para rodar o modelo, é necessário um ambiente Python com estas dependências mínimas: [../monitoring/requirements.txt](../monitoring/requirements.txt).
+```json
+{
+  "volumetry": {
+    "2022-02": 1000,
+    "2022-03": 2000,
+    "2022-04": 1500
+  },
+  "auc_roc": 0.8
+}
+```
 
-**Como avaliar no Notebook**:
-Utilize a lista de registros presente no JSON [../monitoring/batch_records.json](../monitoring/batch_records.json) e faça uma requisição POST ao seu endpoint com essa lista. Deixe visível no seu notebook o retorno da requisição, contendo os itens (a) e (b) descritos acima.
+#### Erros handling
+If the request body is not a valid JSON object or the body doesn't match the body schema, the API will return a 400 Bad Request response with the following error message:
 
-Para calcular o item (b), i.e. a performance do modelo, você precisará transformar a lista de registros no JSON [../monitoring/batch_records.json](../monitoring/batch_records.json) em um Pandas DataFrame, tomar o cuidado de substituir os valores nulos das variáveis pelo valor NaN do Numpy, `np.nan`, e ler o modelo em formato Pickle [../monitoring/model.pkl](../monitoring/model.pkl).
+```json
+// response on bad request
+{
+  "detail": "Invalid request body. Must be a valid JSON object."
+}
+
+// response on invalid schema
+{
+  "detail": "Body schema is invalid: ERROR"
+}
+```
 
 
-### 1.2 Aderência
+If an internal server error occurs, the API will return a 500 Internal Server Error response with the following error message:
 
-Neste endpoint, espera-se que você indique o quanto a distribuição de scores em uma certa base está distante, ou diferente, da distribuição vista na base de Teste, da modelagem. Utilize o teste estatístico de Kolmogorov-Smirnov (KS) como métrica que quantifica essa distância entre as distribuições, podendo opcionalmente também incluir outras métricas de sua escolha, desde que justificando a escolha.
+```json
+{
+  "detail": "Internal server error."
+}
+```
 
-No "body" da requisição, você deve indicar o caminho para um dataset armazenado localmente, e a API irá lê-lo e utilizar o modelo pré-treinado [../monitoring/model.pkl](../monitoring/model.pkl) para escorar esta base (i.e. criar uma coluna com o score, a probabilidade do registro pertencer à classe 1 do Alvo). Depois, a API deve calcular a métrica de distância de distribuições de score entre a **base fornecida como input** da requisição e a **base de [../datasets/credit_01/test.gz](Teste)**, e colocá-la no retorno do endpoint.
+## Aderencia Endpoint
+This endpoint calculates the Kolmogorov-Smirnov (KS) test statistic and the Jensen-Shannon (JS) divergence for a given dataset path.
 
-**Como avaliar no Notebook**:
-Teste seu endpoint com duas bases:
+#### Request
+```bash
+POST /aderencia
+Content-Type: application/json
+```
 
-(a) a base de [../datasets/credit_01/train.gz](Treino),
-(b) a base [../datasets/credit_01/oot.gz](Out-of-time), contendo registros (sem alvo) coletados em meses subsequentes aos meses de Treino e Teste.
+#### The request body must follow the following schema:
+A record should have the following format:
+```json
+{
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "path"
+  ]
+}
+```
+
+#### Response
+If the request is successful, the API will return a JSON response object containing the KS test statistics and the JS divergence:
+
+```json
+{
+  "ks_test": {
+    "ks_statistic": 0.101,
+    "p_value": 0.439
+  },
+  "js_divergence": 0.102
+}
+```
+
+#### Erros handling
+If the request body is not a valid JSON object or the body doesn't match the body schema, the API will return a 400 Bad Request response with the following error message:
+
+```json
+// response on bad request
+{
+  "detail": "Invalid request body. Must be a valid JSON object."
+}
+
+// response on invalid schema
+{
+  "detail": "Body schema is invalid: ERROR"
+}
+```
+
+If the request path or file doesn't exists, the API will return 404 Not Found Request response with the following error message:
+
+// response on invalid schema
+{
+  "detail": "No such file or directory in the provide path."
+}
+```
+
+If an internal server error occurs, the API will return a 500 Internal Server Error response with the following error message:
+
+```json
+{
+  "detail": "Internal server error."
+}
+```
