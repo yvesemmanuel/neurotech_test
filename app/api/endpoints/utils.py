@@ -25,7 +25,7 @@ Functions:
 
 - get_test_data() -> Tuple[pd.DataFrame, pd.Series]:
     Reads and loads test data from a gzip-compressed CSV file
-    located at './../datasets/credit_01/test.gz'.
+    located at './datasets/credit_01/test.gz'.
 
 - calculate_ks(path: str) -> Tuple[float, float]:
     Calculates the KS statistic and p-value for the predicted scores of a given
@@ -47,7 +47,7 @@ from scipy.stats import ks_2samp
 from scipy.spatial.distance import jensenshannon
 
 
-def get_pre_trained_model(path: str = './../model.pkl') -> object:
+def get_pre_trained_model(path: str = './models/model.pkl') -> object:
     '''
     Returns the pre-trained machine learning model loaded from the given path.
 
@@ -86,14 +86,14 @@ def get_data(path: str) -> pd.DataFrame:
     return data_frame
 
 
-def load_batch_records(path: str = './../batch_records.json') -> pd.DataFrame:
+def load_batch_records(path: str = './datasets/batch_records.json') -> pd.DataFrame:
     '''
     Load batch records data from a JSON file into a Pandas DataFrame.
 
     Parameters
     ----------
     path : str
-        The path to the JSON file containing the batch records data. Default is './../batch_records.json'.
+        The path to the JSON file containing the batch records data. Default is './datasets/batch_records.json'.
 
     Returns
     ----------
@@ -189,7 +189,7 @@ def calculate_aucroc(input: pd.DataFrame) -> float:
 def get_test_data() -> Tuple[pd.DataFrame, pd.Series]:
     '''
     Reads and loads test data from a gzip-compressed CSV file
-    located at './../datasets/credit_01/test.gz'.
+    located at './datasets/credit_01/test.gz'.
 
     Returns
     ----------
@@ -198,7 +198,7 @@ def get_test_data() -> Tuple[pd.DataFrame, pd.Series]:
         - y: a pandas Series with the target variable of the test data.
     '''
     df_test = pd.read_csv(
-        './../datasets/credit_01/test.gz', compression='gzip')
+        './datasets/credit_01/test.gz', compression='gzip')
     x_test = df_test.drop(['TARGET'], axis=1)
     y_test = df_test['TARGET']
 

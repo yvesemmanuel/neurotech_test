@@ -14,7 +14,7 @@ test_invalid_body_schema():
 test_successful():
     Tests the successful behavior of the endpoint when a valid request body is sent.
 
-get_testing_body(path: str = './../batch_records.json'):
+get_testing_body(path: str = './../app/datasets/batch_records.json'):
     Helper function that returns a testing batch records body.
 '''
 
@@ -69,7 +69,7 @@ def test_successful():
     assert isinstance(response_body['auc_roc'], float)
 
 
-def get_testing_body(path: str = './batch_records.json'):
+def get_testing_body(path: str = './../app/datasets/batch_records.json'):
     '''
     Helper function that returns a testing batch records body.
 

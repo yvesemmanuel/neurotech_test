@@ -55,7 +55,7 @@ def test_successful():
     Test that the API returns a successful response when called with a valid request body.
     '''
     url = base + '/v1/aderencia'
-    body = {'path': './../datasets/credit_01/train.gz'}
+    body = {'path': './../app/datasets/credit_01/train.gz'}
     
     response = requests.post(url, json=body, headers=headers)
 

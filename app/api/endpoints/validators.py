@@ -43,7 +43,7 @@ def validate_adherence_body(body: dict):
     validate(instance=body, schema={
         'type': 'object',
         'properties': {
-                'path': {'type': 'string', 'pattern': '^\.\/\.\.\/\w+\/\w+_\d+\/\w+\.gz$'}
+                'path': {'type': 'string', 'pattern': '.+'}
         },
         'required': ['path']
     })
