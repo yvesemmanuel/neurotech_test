@@ -155,13 +155,15 @@ If the request is successful, the API will return a JSON response object contain
 #### Erros handling
 If the request body is not a valid JSON object or the body doesn't match the body schema, the API will return a 400 Bad Request response with the following error message:
 
+Response on bad request:
 ```json
-// response on bad request
 {
   "detail": "Invalid request body. Must be a valid JSON object."
 }
+```
 
-// response on invalid schema
+Response on invalid schema:
+```json
 {
   "detail": "Body schema is invalid: ERROR"
 }
@@ -222,8 +224,10 @@ If the request body is not a valid JSON object or the body doesn't match the bod
 {
   "detail": "Invalid request body. Must be a valid JSON object."
 }
+```
 
-// response on invalid schema
+Response on invalid schema
+```json
 {
   "detail": "Body schema is invalid: ERROR"
 }
@@ -231,7 +235,7 @@ If the request body is not a valid JSON object or the body doesn't match the bod
 
 If the request path or file doesn't exists, the API will return 404 Not Found Request response with the following error message:
 
-// response on invalid schema
+```json
 {
   "detail": "No such file or directory in the provide path."
 }
